@@ -1,3 +1,14 @@
+'use strict';
+
+
+// Application Dependencies
+
+const express = require('express');
+const superagent =require('superagent');
+const pg = require('pg');
+const methodOverride = require('method-override');
+
+
 const http = require('http');
 
 const hostname = '127.0.0.1';
