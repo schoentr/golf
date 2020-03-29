@@ -38,6 +38,14 @@ app.use(
   })
 );
 
+
+
+
+
+
+
+
+
 // Routes
 app.get('/', homepage);
 app.get('/newuser',userForm);
@@ -52,13 +60,43 @@ app.get('*', (req,res) => res.status(404).send('This route does not exist'));
 
 app.listen(PORT, () => console.log( `Listening on port: ${PORT}`));
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 function homepage(req,res){
   res.render('pages/index');
 }
 
+
+
+
+
 function userForm(req,res){
   return res.render('pages/newuser')
 }
+
+
+
+
+
 function courseLookup(req,res){
   let SQL = 'Select * from courses;';
   return client.query(SQL)
@@ -66,22 +104,27 @@ function courseLookup(req,res){
       const formattedCourses = formatCoursesForRender (courses.rows);
       //   console.log('ln 66' + formattedCourses);
       return res.render('pages/courses', {courses:formattedCourses});
-    })
+    });
 }
+
+
+
+
+
 function getOneCourse(req, res){
   let courses;
   const SQL = 'SELECT * FROM Courses where id=$1;';
   return client.query(SQL, [req.params.id])
-    .then((courses=>{
-      formattedCourses = formatCoursesForRender(courses.rows);
+    .then((courses)=>{
+      let formattedCourses = formatCoursesForRender(courses.rows);
       console.log(courses);
       // let teeSQL= 'SELECT * From TEES where course_id=$1;';
       // return client.query(teeSQL,[req.params.id])
       //   .then((teeResult)=>{
 
-      return res.render('pages/course-detail', {courses,formattedCourses})
+      return res.render('pages/course-detail', {courses:formattedCourses})
 
-    } )
+    }).catch(error => handleError(error));
 
 }
 
@@ -97,7 +140,7 @@ function formatCoursesForRender(courses){
     course.dateArray = course.date_verified;
     // console.log('ln 73' + course.ow);
     return course;
-  })
+  }).catch(error => handleError(error));
 }
 
 
