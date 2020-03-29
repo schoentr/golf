@@ -6,14 +6,21 @@
         <h4> Detail Page</h4>
       
 
-               <h3 class="card-name"> <%= courses[0].nameArray %></h3> 
-               <a href="http://<%= courses[0].webArray %>" target="_blank"><%= courses[0].webArray %></a>
-               <p class="card-phone"><%= courses[0].phoneArray %></p>
-               <p class="card-city"><%= courses[0].cityArray %>, <%= courses[0].stateArray %></p> 
-
-            
-       
+        <h3 class="card-name"> <%= tees[0].nameArray %></h3> 
+        <a href="http://<%= tees[0].webArray %>" target="_blank"><%= tees[0].webArray %></a>
+        <p class="card-phone"><%= tees[0].phoneArray %></p>
+        <p class="card-city"><%= tees[0].cityArray %>, <%= tees[0].stateArray %></p> 
+        <section>
+            <form class="tee-form" method="post" action="/score">
+                <%tees.forEach(tee => { %>
+                    <input type=radio class="<%=tee.colorArray%>" name="tee_id" value= "<%=tee.idArray%>,<%=tee.slopeArray%>,<%=tee.ratingArray%>""><%=tee.colorArray%> Slope:<%=tee.slopeArray%> Rating:<%=tee.ratingArray%>  </li>
+                <% }) %>
         
+                    <input type="date" name="date">
+                    <input type="number" name="score">
+                <button type="submit">Record Score</button>
+            </form>
+        </section>  
         
     </body>
    

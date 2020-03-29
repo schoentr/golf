@@ -52,6 +52,7 @@ app.get('/newuser',userForm);
 app.post('/newuser',postUser);
 app.get('/courses', courseLookup);
 app.get('/courses/:id',getOneCourse);
+app.post('/score',postScore);
 
 
 //Catch-all
@@ -62,7 +63,10 @@ app.listen(PORT, () => console.log( `Listening on port: ${PORT}`));
 
 
 
-
+function handleError(err,res){
+  console.err(err);
+  res.render('/');
+}
 
 
 
@@ -107,28 +111,62 @@ function courseLookup(req,res){
     });
 }
 
-
-
+function postScore(req,res){
+  let score=req.body.score;
+  let date=req.body.date;
+  let tee_id=req.body.tee_id;
+  console.log('Score: ',score);
+  console.log('Date: ',date);
+  console.log('Tee ID: ', tee_id);
+  console.log(typeof tee_id);
+  let teeStringArray = tee_id.split(',');
+  tee_id=parseInt(teeStringArray[0]);
+  let rating =parseFloat(teeStringArray[1]);
+  let slope =parseFloat(teeStringArray[2]);
+  console.log('Tee ID: ', tee_id, typeof tee_id);
+  console.log('Rating: ', rating, typeof rating);
+  console.log('Slope: ', slope, typeof slope);
+  const sql ='insert into rounds(USER_ID,Tee_id, SCORE, differential, DATE_PLAYED)VALUES ($1,$2,$3,$4,$5)Returning id; ' ;
+  let differential = calculateDifferential(score,slope,rating);
+  return client.query(sql,[1,tee_id,score, differential,date])
+    .then((results)=>{
+      return res.redirect('/');
+    });
+}
+function calculateDifferential(score,slope,rating){
+  let differential = (((score - rating)* 113)/slope);
+ return differential;
+}
 
 
 function getOneCourse(req, res){
-  let courses;
-  const SQL = 'SELECT * FROM Courses where id=$1;';
+  const SQL = 'select tees.id, tees.color,tees.slope,tees.rating, courses.name,courses.phone,courses.ow,courses.city,courses.region,courses.date_verified from tees inner join courses on tees.course_id = courses.id where course_id = $1 ';
   return client.query(SQL, [req.params.id])
-    .then((courses)=>{
-      let formattedCourses = formatCoursesForRender(courses.rows);
-      console.log(courses);
-      // let teeSQL= 'SELECT * From TEES where course_id=$1;';
-      // return client.query(teeSQL,[req.params.id])
-      //   .then((teeResult)=>{
+    .then((tees)=>{
+      let formattedTees = formatTeesForRender(tees.rows);
+      return res.render('pages/course-detail', {tees:formattedTees})
 
-      return res.render('pages/course-detail', {courses:formattedCourses})
-
-    }).catch(error => handleError(error));
+    });
 
 }
 
 
+function formatTeesForRender(tees){
+  return tees.map((tee) => {
+    tee.idArray = tee.id;
+    tee.nameArray = tee.name;
+    tee.phoneArray =tee.phone;
+    tee.webArray = tee.ow;
+    tee.cityArray= tee.city;
+    tee.stateArray = tee.region;
+    tee.colorArray = tee.color;
+    tee.slopeArray = tee.slope;
+    tee.ratingArray = tee.rating;
+    tee.dateArray = tee.date_verified;
+    // console.log('ln 143' + course.ow);
+    return tee;
+  })
+}
 function formatCoursesForRender(courses){
   return courses.map((course) => {
     course.idArray = course.id;
@@ -140,7 +178,7 @@ function formatCoursesForRender(courses){
     course.dateArray = course.date_verified;
     // console.log('ln 73' + course.ow);
     return course;
-  }).catch(error => handleError(error));
+  })
 }
 
 
