@@ -1,6 +1,6 @@
 DROP TABLE IF EXISTS ROUNDS;
 DROP TABLE IF EXISTS users;
-DROP TABLE IF EXISTS Tee;   
+DROP TABLE IF EXISTS Tees;   
 DROP TABLE IF EXISTS courses;
 
 
@@ -27,13 +27,16 @@ CREATE TABLE Courses(
     name VARCHAR(255),
     phone VARCHAR(15),
     ow VARCHAR(255),
-    date_verified TIMESTAMP
+    city VARCHAR(255),
+    region VARCHAR(255),
+    date_verified date
 );
-
-CREATE TABLE Tee (
+re
+CREATE TABLE tees (
     id SERIAL Primary Key,
     course_id INTEGER NOT NULL,
     FOREIGN KEY (course_id) REFERENCES courses(id),
     color varchar(255),
-    slope NUMERIC
+    slope NUMERIC,
+    rating INTEGER
 );

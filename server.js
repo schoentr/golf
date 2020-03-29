@@ -40,27 +40,63 @@ app.use(
 
 // Routes
 app.get('/', homepage);
+app.get('/newuser',userForm);
+app.post('/newuser',postUser);
+app.get('/courses', courseLookup);
 
+
+//Catch-all
 app.get('*', (req,res) => res.status(404).send('This route does not exist'));
+
+
 app.listen(PORT, () => console.log( `Listening on port: ${PORT}`));
 
 function homepage(req,res){
-    res.render('pages/index');
+  res.render('pages/index');
 }
 
+function userForm(req,res){
+  return res.render('pages/newuser')
+}
+function courseLookup(req,res){
+  let SQL = 'Select * from courses;';
+  return client.query(SQL)
+    .then((courses) => {
+      const formattedCourses = formatCoursesForRender (courses.rows);
+    //   console.log('ln 66' + formattedCourses);
+      return res.render('pages/courses', {courses:formattedCourses});
+    })
+}
 
+function formatCoursesForRender(courses){
+    return courses.map((course) => {
+        course.idArray = course.id;
+        course.nameArray = course.name;
+        course.phoneArray = course.phone;
+        course.webArray = course.ow;
+        course.cityArray= course.city;
+        course.stateArray = course.region;
+        course.dateArray = course.date_verified;
+     console.log('ln 73' + course.ow);
+        return course;
+    })
+}
 
-
-// const http = require('http');
-// const hostname = '127.0.0.1';
-// const port = 3000;
-
-// const server = http.createServer((req, res)=> {
-//   res.statusCode = 200;
-//   res.setHeader('Content-Type','text/plain');
-//   res.end('Hello World');    
-// });
-
-// server.listen(port, hostname, () => {
-//   console.log(`Server running at http://${hostname}:${port}/`);
-// });
+function postUser(req,res){
+  const username = req.body.username;
+  const sqlSelect = 'SELECT * FROM users Where name=$1';
+  client.query(sqlSelect,[username])
+    .then((result1)=> {
+    //   console.log(result1);
+      //   return res.redirect ('/');
+      if (result1.rowCount > 0) {
+        return res.redirect('/');
+      }else {
+        const sqlInsert= 'INSERT INTO users (name) values ($1) returning id';
+        client.query(sqlInsert,[username])
+          .then((result1) =>{
+            res.redirect('/')
+          } ).catch(error => handleError(error));
+      }
+    }).catch(error => handleError(error));
+}
