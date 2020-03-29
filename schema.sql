@@ -31,7 +31,7 @@ CREATE TABLE Courses(
     region VARCHAR(255),
     date_verified date
 );
-re
+
 CREATE TABLE tees (
     id SERIAL Primary Key,
     course_id INTEGER NOT NULL,

@@ -6,6 +6,10 @@ INSERT INTO courses (
 
 INSERT INTO courses (
     name,phone,ow,city,region,date_verified) VALUES ('West Seattle Golf Course','(xxx)xxx-xxxx','www.westseattlegolf.com','Seattle','WA','2008/02/01');
+INSERT INTO courses (
+    name,phone,ow,city,region,date_verified) VALUES ('Gold Mountain - Olympic Course','(360)415-5432','www.goldmountaingolf.com','Bremerton','WA','2008/02/01');
+INSERT INTO courses (
+    name,phone,ow,city,region,date_verified) VALUES ('Gold Mountain - Cascade Course','(360)415-5432','www.goldmountaingolf.com','Bremerton','WA','2008/02/01');
 
 INSERT INTO tees (
     course_id, color, slope,rating) Values (1,'Green', 74.7, 141);
@@ -29,3 +33,23 @@ INSERT INTO tees (
     course_id, color, slope,rating) Values (2,'Purple', 64.2, 100);
 INSERT INTO tees (
     course_id, color, slope,rating) Values (2,'Gold', 62.5, 97);
+INSERT INTO tees (
+    course_id, color, slope,rating) Values (3,'Gold (Pro)', 74.8, 139);
+INSERT INTO tees (
+    course_id, color, slope,rating) Values (3,'Blue (Tourney)', 71.9, 134);
+INSERT INTO tees (
+    course_id, color, slope,rating) Values (3,'White (Player)', 70.0, 126);
+INSERT INTO tees (
+    course_id, color, slope,rating) Values (3,'Pink (Scoring)', 68.3, 121);
+INSERT INTO tees (
+    course_id, color, slope,rating) Values (3,'Red (Forward)', 66.2, 117);
+INSERT INTO tees (
+    course_id, color, slope,rating) Values (4,'Gold (Pro)', 73.0, 125);
+INSERT INTO tees (
+    course_id, color, slope,rating) Values (4,'Blue (Tourney)', 71.2, 122);
+INSERT INTO tees (
+    course_id, color, slope,rating) Values (4,'White (Player)', 69.4, 119);
+INSERT INTO tees (
+    course_id, color, slope,rating) Values (4,'Pink (Scoring)', 67.5, 117);
+INSERT INTO tees (
+    course_id, color, slope,rating) Values (4,'Red (Forward)', 65.4, 112);

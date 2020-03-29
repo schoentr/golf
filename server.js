@@ -43,6 +43,7 @@ app.get('/', homepage);
 app.get('/newuser',userForm);
 app.post('/newuser',postUser);
 app.get('/courses', courseLookup);
+app.get('/courses/:id',getOneCourse);
 
 
 //Catch-all
@@ -63,38 +64,56 @@ function courseLookup(req,res){
   return client.query(SQL)
     .then((courses) => {
       const formattedCourses = formatCoursesForRender (courses.rows);
-    //   console.log('ln 66' + formattedCourses);
+      //   console.log('ln 66' + formattedCourses);
       return res.render('pages/courses', {courses:formattedCourses});
     })
 }
+function getOneCourse(req, res){
+  let courses;
+  const SQL = 'SELECT * FROM Courses where id=$1;';
+  return client.query(SQL, [req.params.id])
+    .then((courses=>{
+      formattedCourses = formatCoursesForRender(courses.rows);
+      console.log(courses);
+      // let teeSQL= 'SELECT * From TEES where course_id=$1;';
+      // return client.query(teeSQL,[req.params.id])
+      //   .then((teeResult)=>{
+
+      return res.render('pages/course-detail', {courses,formattedCourses})
+
+    } )
+
+}
+
 
 function formatCoursesForRender(courses){
-    return courses.map((course) => {
-        course.idArray = course.id;
-        course.nameArray = course.name;
-        course.phoneArray = course.phone;
-        course.webArray = course.ow;
-        course.cityArray= course.city;
-        course.stateArray = course.region;
-        course.dateArray = course.date_verified;
-     console.log('ln 73' + course.ow);
-        return course;
-    })
+  return courses.map((course) => {
+    course.idArray = course.id;
+    course.nameArray = course.name;
+    course.phoneArray = course.phone;
+    course.webArray = course.ow;
+    course.cityArray= course.city;
+    course.stateArray = course.region;
+    course.dateArray = course.date_verified;
+    // console.log('ln 73' + course.ow);
+    return course;
+  })
 }
+
 
 function postUser(req,res){
   const username = req.body.username;
   const sqlSelect = 'SELECT * FROM users Where name=$1';
   client.query(sqlSelect,[username])
-    .then((result1)=> {
+    .then((result)=> {
     //   console.log(result1);
       //   return res.redirect ('/');
-      if (result1.rowCount > 0) {
+      if (result.rowCount > 0) {
         return res.redirect('/');
       }else {
         const sqlInsert= 'INSERT INTO users (name) values ($1) returning id';
         client.query(sqlInsert,[username])
-          .then((result1) =>{
+          .then((result) =>{
             res.redirect('/')
           } ).catch(error => handleError(error));
       }
