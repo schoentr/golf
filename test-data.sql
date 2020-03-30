@@ -53,5 +53,5 @@ INSERT INTO tees (
     course_id, color, slope,rating) Values (4,'Pink (Scoring)', 67.5, 117);
 INSERT INTO tees (
     course_id, color, slope,rating) Values (4,'Red (Forward)', 65.4, 112);
-    3 |       1 |      3 |    96 | 21.572727272727274 | 2020-03-18
-INSERT INTO Rounds (User_id, Tee_ID, Score, differential, Date_Played) Values (1,3,96,21.57272,'2020/03/18');
+
+INSERT INTO Rounds (User_id, Tee_ID, Score, differential, Date_Played) Values (1,3,96,21.57272,'2020-03-18');

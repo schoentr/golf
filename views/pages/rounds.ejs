@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang = "en">
+    <body>
+        <%- include('../layout/header') %>
+        <%- include('../layout/nav')%>
+    </body>
+    <h1>Rounds</h1>
+
+    <h3> Handicap <%=handicap%></h3>
+    <table>
+      <tr>
+        <th>Date</th>
+        <th>Course</th>
+        <th>Tees</th>
+        <th>Score</th>
+        <th>Differential</th>
+      </tr>
+      
+      <%rounds.forEach (round => {%>
+      <tr>
+        <th><%=round.dateArray %></th>
+        <th><%=round.nameArray %></th>
+        <th><%=round.colorArray %></th>
+        <th><%=round.scoreArray %></th>
+        <th><%=round.differentialArray %></th>
+        
+      </tr>
+
+      <%})%>
+
+    </table>
+
+    
+     
+    
+</html>

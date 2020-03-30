@@ -13,11 +13,11 @@
         <section>
             <form class="tee-form" method="post" action="/score">
                 <%tees.forEach(tee => { %>
-                    <input type=radio class="<%=tee.colorArray%>" name="tee_id" value= "<%=tee.idArray%>,<%=tee.slopeArray%>,<%=tee.ratingArray%>""><%=tee.colorArray%> Slope:<%=tee.slopeArray%> Rating:<%=tee.ratingArray%>  </li>
+                    <input type=radio class="<%=tee.colorArray%>" name="tee_id" value= "<%=tee.idArray%>,<%=tee.slopeArray%>,<%=tee.ratingArray%>"required  ><%=tee.colorArray%> Slope:<%=tee.slopeArray%> Rating:<%=tee.ratingArray%>  </li>
                 <% }) %>
         
-                    <input type="date" name="date">
-                    <input type="number" name="score">
+                    <input type="date" name="date" required>
+                    <input type="number" name="score" required>
                 <button type="submit">Record Score</button>
             </form>
         </section>  

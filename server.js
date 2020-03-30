@@ -53,6 +53,8 @@ app.post('/newuser',postUser);
 app.get('/courses', courseLookup);
 app.get('/courses/:id',getOneCourse);
 app.post('/score',postScore);
+app.get('/rounds',rounds);
+
 
 
 //Catch-all
@@ -68,37 +70,12 @@ function handleError(err,res){
   res.render('/');
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 function homepage(req,res){
   res.render('pages/index');
 }
 
-
-
-
-
 function userForm(req,res){
-  return res.render('pages/newuser')
-}
-
-
-
+  return res.render('pages/newuser')}
 
 
 function courseLookup(req,res){
@@ -106,31 +83,94 @@ function courseLookup(req,res){
   return client.query(SQL)
     .then((courses) => {
       const formattedCourses = formatCoursesForRender (courses.rows);
-      //   console.log('ln 66' + formattedCourses);
       return res.render('pages/courses', {courses:formattedCourses});
     });
 }
+function rounds(req,res){
+  const sql = 'select users.id, Users.name,rounds.date_played, courses.name,tees.color, rounds.score, rounds.differential from rounds inner join users on rounds.user_id=Users.id inner join tees on rounds.tee_id=Tees.id inner join courses on tees.course_id=courses.id where users.id = $1 order by rounds.date_played desc limit 20;';
+  return client.query(sql, [1])
+    .then((rounds)=>{
+      let formatHandi = []
+      let formattedRounds = formatRoundsForRender(rounds.rows);
+      let handicap  = calculateHandicap(formattedRounds);
+      return res.render('pages/rounds',{rounds:formattedRounds,handicap:handicap});
+    });
+}
+function calculateHandicap(formatedrounds){
+  let diffArray=[];
+  let temp;
+  formatedrounds.map(x=> {
+    temp= Number(x.differentialArray)
+    x.differentialArray= temp.toFixed(2);
+    diffArray.push(temp.toFixed(2));
+  }) ;
+  diffArray.sort(function(a,b){return a-b});
+  let sum=0;
+  let hand=0; 
+  if (diffArray.length<6){
+    hand=diffArray[0]*.96;
+  }else if(diffArray.length<8){
+    sum= Number(diffArray[0])+Number(diffArray[1]);
+    hand=sum/2*.96;
+  }else if (diffArray.length<11){
+    for(let x=0; x< 3; x++){
+      sum+=Number(diffArray[x]);
+    }
+    hand=sum/3*.96;
+  }else if (diffArray.length<13){
+    for(let x=0; x< 4; x++){
+      sum+=Number(diffArray[x]);
+    }
+    hand=sum/4*.96;
+  }else if (diffArray.length<15){
+    for(let x=0; x< 5; x++){
+      sum+=Number(diffArray[x]);
+    }
+    hand=sum/5*.96;
+  }else if (diffArray.length<17){
+    for(let x=0; x< 6; x++){
+      sum+=Number(diffArray[x]);
+    }
+    hand=sum/6*.96;
+  }else if (diffArray.length<18){
+    for(let x=0; x< 7; x++){
+      sum+=Number(diffArray[x]);
+    }
+    hand=sum/7*.96;
+  }else if (diffArray.length<19){
+    for(let x=0; x< 8; x++){
+      sum+=Number(diffArray[x]);
+    }
+    hand=sum/8*.96;
+  }else if (diffArray.length<20){
+    for(let x=0; x< 9; x++){
+      sum+=Number(diffArray[x]);
+    }
+    hand=sum/9*.96;
+  }else if (diffArray.length<21){
+    for(let x=0; x< 10; x++){
+      sum+=Number(diffArray[x]);
+    }
+    hand=sum/10*.96;
+  }
+  return hand;
+}
+
+
 
 function postScore(req,res){
   let score=req.body.score;
   let date=req.body.date;
   let tee_id=req.body.tee_id;
-  console.log('Score: ',score);
-  console.log('Date: ',date);
-  console.log('Tee ID: ', tee_id);
-  console.log(typeof tee_id);
   let teeStringArray = tee_id.split(',');
   tee_id=parseInt(teeStringArray[0]);
   let rating =parseFloat(teeStringArray[1]);
   let slope =parseFloat(teeStringArray[2]);
-  console.log('Tee ID: ', tee_id, typeof tee_id);
-  console.log('Rating: ', rating, typeof rating);
-  console.log('Slope: ', slope, typeof slope);
   const sql ='insert into rounds(USER_ID,Tee_id, SCORE, differential, DATE_PLAYED)VALUES ($1,$2,$3,$4,$5)Returning id; ' ;
   let differential = calculateDifferential(score,slope,rating);
   return client.query(sql,[1,tee_id,score, differential,date])
     .then((results)=>{
-      return res.redirect('/');
+      return res.redirect('/rounds');
     });
 }
 function calculateDifferential(score,slope,rating){
@@ -149,7 +189,16 @@ function getOneCourse(req, res){
     });
 
 }
-
+function formatRoundsForRender(rounds){
+  return rounds.map((round)=>{
+    round.nameArray=round.name;
+    round.dateArray=round.date_played;
+    round.colorArray=round.color;
+    round.scoreArray=round.score;
+    round.differentialArray=round.differential;
+    return round;
+  })
+}
 
 function formatTeesForRender(tees){
   return tees.map((tee) => {
@@ -163,7 +212,6 @@ function formatTeesForRender(tees){
     tee.slopeArray = tee.slope;
     tee.ratingArray = tee.rating;
     tee.dateArray = tee.date_verified;
-    // console.log('ln 143' + course.ow);
     return tee;
   })
 }
@@ -176,7 +224,6 @@ function formatCoursesForRender(courses){
     course.cityArray= course.city;
     course.stateArray = course.region;
     course.dateArray = course.date_verified;
-    // console.log('ln 73' + course.ow);
     return course;
   })
 }
@@ -187,8 +234,6 @@ function postUser(req,res){
   const sqlSelect = 'SELECT * FROM users Where name=$1';
   client.query(sqlSelect,[username])
     .then((result)=> {
-    //   console.log(result1);
-      //   return res.redirect ('/');
       if (result.rowCount > 0) {
         return res.redirect('/');
       }else {
